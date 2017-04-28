@@ -1,0 +1,116 @@
+\documentclass{sig-alternate}
+%\documentclass{vldb}
+
+\usepackage{times}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{epsfig,color}
+\usepackage{cite}
+\usepackage{xspace}
+%\usepackage{amsthm}
+\usepackage{subfigure}
+\usepackage{theorem}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{epstopdf}
+\usepackage{wrapfig}
+%\usepackage{stackrel}
+%\usepackage{mathtools}
+%\usepackage{MnSymbol}
+\usepackage{listings}
+\usepackage[ruled, vlined]{algorithm2e}
+%\usepackage{epstopdf}
+
+
+\usepackage{algorithmic}
+\usepackage{multirow}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{claim}{Claim}
+
+\lstset{breaklines}
+\lstset{emph={POINT, KNN, RANGE, CIRCLERANGE, RTREE, USE, DISTANCE, type, SHOW}, emphstyle={\textbf}}
+\lstset{basicstyle=\scriptsize\ttfamily}
+\addtolength{\subfigbottomskip}{-4mm}
+\addtolength{\subfigtopskip}{-4mm}
+%hk version, here we don't need -4, -1 instead.
+\addtolength{\subfigcapskip}{-0.5mm}
+\addtolength{\textfloatsep}{-2mm}
+\addtolength{\intextsep}{-2mm}
+\addtolength{\dbltextfloatsep}{-1mm}
+
+{\theorembodyfont{\rmfamily}
+\newtheorem{definition}{Definition}}
+{\theorembodyfont{\rmfamily}
+\newtheorem{example}{Example}}
+\hyphenation{data-base}
+
+%\hyphenation{cha-racter-}
+%\balancecolumns
+\newenvironment{pkl}{%
+\begin{itemize}%
+%\vspace{-\topsep}%
+\setlength\itemsep{-0.5\parskip}%
+\setlength\parsep{0in}%
+}{%
+%\vspace{-\topsep}%
+\end{itemize}}
+
+\newcommand{\Paragraph}[1]{~\vspace*{-0.8\baselineskip}\\{\bf #1}}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+\newcommand{\argmin}{\operatornamewithlimits{argmin}}
+\newcommand{\name}{Simba\xspace}
+\newcommand{\SparkSpatial}{SparkSpatial\xspace}
+\newcommand{\B}{\mathcal{B}}
+%\newcommand{\dbar}{d \hspace{-0.8ex}\rule[1.2ex]{0.9ex}{.1ex}}
+\newcommand{\dbar}{\delta}
+\newcommand{\knn}{\operatorname{knn}}
+\newcommand{\maxdist}{\operatorname{maxdist}}
+\newcommand{\mindist}{\operatorname{mindist}}
+\newcommand{\range}{\operatorname{range}}
+\newcommand{\mbr}{\operatorname{mbr}}
+\newlength{\figsize} \setlength{\figsize}{0.2\textwidth}
+% \underset{x}{\operatorname{argmax}}
+% \underset{x}{\operatorname{argmin}}
+\newcommand{\dong}[1]{{\color{red} $\langle$\textsc{Dong:} #1$\rangle$}}
+\newcommand{\feifei}[1]{{\color{blue}$\langle$\textsc{Feifei:} #1$\rangle$}}
+
+\begin{document}
+
+\title{\name: Efficient In-Memory Spatial Analytics}
+
+\author{Paper ID: xxx}
+
+\maketitle
+
+\thispagestyle{empty}
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+%% A category with the (minimum) three required fields
+%\category{H.4}{Information Systems Applications}{Miscellaneous}
+%%A category including the fourth, optional field follows...
+%\category{D.2.8}{Software Engineering}{Metrics}[complexity measures, performance measures]
+%
+%\terms{Theory}
+%
+%\keywords{ACM proceedings, \LaTeX, text tagging}
+\input{intro}
+\input{background}
+\input{overview}
+\input{parser}
+\input{index}
+\input{operation}
+\input{optimization}
+\input{experiment}
+\input{related}
+\input{conclude}
+
+\small
+\bibliographystyle{abbrv}
+\bibliography{paper}
+\normalsize
+\input{appendix}
+
+\end{document}

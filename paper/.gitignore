@@ -1,0 +1,8 @@
+*.log
+*.aux
+*.ps
+paper.pdf
+*.dvi
+*.gz
+figs/exp/*.pdf
+*.blg

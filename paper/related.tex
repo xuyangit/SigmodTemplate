@@ -1,0 +1,149 @@
+\section{Related Work}
+\label{sec:related}
+% Triggered by the needs on large-scale spatial data queries and analytics,
+% there is an increasing interest in supporting spatial operations under
+% distributed environment. Existing works can be classified as either efforts
+% on supporting a specific spatial operation under a distributed computation
+% framework (e.g. Hadoop) or a system designed for a suite of spatial operations.
+
+\name is closely related to Spark and Spark SQL, which we have
+reviewed in details in Section \ref{sec:background}. In particular,
+\name has introduced many new components and significant extensions to
+the Spark SQL core to build a full-fledged, native spatial query
+engine over Spark. It adds spatial operators to both SQL and DataFrame
+query interface, introduces indexing support over RDDs, designs and
+implements novel spatial query algorithms and plans based on the RDD
+abstraction and the new indexing support, and adds spatial-aware
+optimizations to both the logical and physical optimizers as well as
+exploring cost-based optimizations.
+
+\dong{The last sentence of the first paragraph is too long and confusing.
+It actually contains 4 `and's...}
+
+In addition, spatial analytical systems running over a cluster are
+also related, such as SpatialHadoop \cite{spatialhadoop} and Hadoop
+GIS \cite{hadoopgis} that are based on Hadoop with the MapReduce
+framework, which we have reviewed in Sections \ref{sec:background} and
+\ref{sec:exp}. But since \name is based on Spark and Spark SQL which
+explores in-memory computation using the RDD abstractions, the design
+and system architecture are fundamentally different. As to Spark-based
+systems like GeoSpark\cite{geospark} and SpatialSpark\cite{spatialspark},
+they do not support (global and/or local) indexes natively over RDDs
+as \name does. GeoSpark does not support spatial objects with additional
+attributes (e.g. strings). None of Hadoop GIS, GeoSpark and SpatialSpark
+provides a query engine like \name that supports SQL and DataFrame query
+interfaces with query planning and optimization, except for SpatialHadoop
+where a SQL-like query language called Pigeon (an extension of Pig\cite{pig})
+is supported. Another important problem on such systems is that they
+have to rely on user-level processes to support concurrent queries, which
+greatly hurts system throughput. Performance-wise, \name has significantly
+outperformed all these systems, including Spark SQL. 
+
+Other than these systems, MD-HBase \cite{mdhbase} extends HBase to
+support location services. It adds KD-tree and quad-tree indexes to
+HBase to support range and $k$NN queries. GeoMesa \cite{geomesa}
+builds a distributed spatial-temporal database on top of Apache
+Accumulo \cite{accumulo}. It leverages GeoHash Index to provide
+spatial queries over spatial-temporal data stored in Apache
+Accumulo. Note that both HBase and Accumulo are both modeled after
+Google's BigTable \cite{DBLP:journals/tocs/ChangDGHWBCFG08}, hence,
+both MD-HBase and GeoMesa are essentially Key-Value stores with
+support for spatial operations. As a result, both the design and the
+objective of the system are very different from an in-memory spatial
+analytical engine like \name, and the other systems we have examined
+and compared with.
+
+Most existing systems design indexing structures for the MapReduce
+framework (e.g., Hadoop and HDFS), and they work with indexed data
+from HDFS. In other words, they acquire data and indexes through a
+distributed file system, which involves non-trivial disk
+I/Os. SpatialSpark \cite{spatialspark} runs on top of Spark, but
+rather than indexing RDDs natively, it partitions data, stores them
+back to HDFS and {\em builds an index outside the Spark engine}.  An
+open source project \cite{indexedrdd} provides an approach hat builds
+index directly on Spark's RDD abstraction. However, it only supports
+hash indexing on key-value pair RDDs, which doesn't extend to spatial
+query processing and is very different from our indexing approach.
+
+Other than these system efforts, indexing and query processing for
+spatial data in the MapReduce framework have been explored by many
+work in the literature, for example, z-value based indexing in
+MapReduce \cite{cary2009experiences}, range queries in MapReduce
+\cite{ma2009query, zhang2009spatial}, $k$NN queries in MapReduce
+\cite{zhang2009spatial, akdogan2010voronoi}, $k$NN joins in MapReduce
+\cite{feifeiknnj,bcknnj}, and spatial join over geometric objects in
+MapReduce \cite{SJMR}. % In particular, using Hadoop . The SJMR
+% algorithm \cite{SJMR} was proposed, which is a MapReduce version of
+% the partition-based spatial-merge join (PBSM) algorithm \cite{pbsm}.
+Note that a {\em distance join} $R \Join_{\tau} S$ can be converted
+into a {\em spatial join} as we discussed in Section
+\ref{sec:exp}. However, using a spatial join algorithm over this
+mapping approach to solve distance join is not as efficient as solving
+distance join over point objects directly, as geometric objects and
+geometric relationships are in general much more expensive to deal. A
+detailed review of spatial query processing in MapReduce is beyond the
+scope of this paper, and we refer interested readers to the discussion
+in \cite{spatialhadoop, hadoopgis} and references therein.
+
+Lastly, various spatial partitioning strategies were explored in the
+MapReduce framework using Hadoop. An extensive survey and performance
+comparison of these results can be found in
+\cite{sato,DBLP:journals/pvldb/EldawyAM15}. \name primarily explored
+the Sort-Tile-Recursive (STR) partitioning scheme \cite{str} for its
+indexing module, which has shown to be one of the best spatial
+partitioning methods (e.g., see latest results in
+\cite{DBLP:journals/pvldb/EldawyAM15}). That said, other spatial
+partitioning methods can be easily employed and supported by \name,
+and these results are orthogonal to the \name system.
+
+% A method to construct R-Tree in Hadoop
+% was proposed in \cite{cary2009experiences}, which partitions records
+% according to their z-values, builds a separate R-tree for each
+% partition and combines those R-trees under a common root.  Several
+% solutions \cite{ma2009query, zhang2009spatial} was proposed to show
+% how range queries can be handled with MapReduce, where the input file
+% is scanned and each record is compared against the query range.  $k$NN
+% queries in MapReduce is studied in \cite{zhang2009spatial} by taking a
+% brute force approach that calculates the distance from the query point
+% to each data point and then selects the data points with $k$ nearest
+% distances. Another solution for $k$NN queries was proposed in
+% \cite{akdogan2010voronoi}, which partitions data points using a
+% Voronoi diagram and finds the answer in the partitions which is close
+% to the query point. Besides, a MapReduce algorithm for reverse nearest
+% neighbor (RNN) queries, which exploits the properties of Voronoi
+% diagram, was proposed in the same paper \cite{akdogan2010voronoi}.
+
+% As to processing $k$NN join under MapReduce framework, \cite{bcknnj}
+% provides an algorithm leveraging Voronoi diagram based partition
+% strategy, while \cite{feifeiknnj} proposes an approximate approach
+% based on the properties of Z-values.
+
+
+%Spatial join has been studied in MapReduce, in particular, using
+%Hadoop \cite{SJMR}. The SJMR algorithm \cite{SJMR} was proposed which
+%is a MapReduce version of the partition-based spatial-merge join
+%(PBSM) algorithm \cite{pbsm}. Thus, a simple solution is to use the
+%SJMR algorithm over the mapping approach above.
+% SpatialHadoop adopts a two-level indexing strategy within the
+% MapReduce framework so as to build and persist indexes for data stored
+% in HDFS. \cite{sato} proposed an effective and scalable partitioning
+% framework for Hadoop called SATO, which stands for four main steps in
+% such framework: Sample, Analyze, Tear and Optimize. Hadoop-GIS makes
+% use of this framework in building multi-level indexes. SpatialSpark
+% partitions data stored on HDFS and builds a split-level global index
+% with Apache Spark. Nevertheless, all solutions mentioned above
+% requires pushing intermediate results and indexed data on HDFS. To
+% make the matter worse, these systems have to acquire data and indexes
+% through distributed file systems, which may bring non-trivial
+% overheads of I/Os and API calls. An open source project
+% \cite{indexedrdd} provides another approach that builds indexes upon
+% Spark's RDD abstraction. However, it only supports hash indexing on
+% key-value pair RDDs.
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:
+

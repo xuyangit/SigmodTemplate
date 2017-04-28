@@ -1,0 +1,104 @@
+\section{Introduction}
+\label{sec:intro}
+There has been an explosion in the amounts of spatial data in recent
+years. Mobile applications on smart phones and various internet of
+things (IoT) projects (e.g., sensor measurements for smart city)
+generate humongous volume of data with spatial dimensions. What's
+more, spatial dimensions often play an important role in these
+applications, for example, user and driver locations are the most
+critical features for the Uber app. How to query and analyze such large
+spatial data with low latency and high throughput is a fundamental
+challenge. Most traditional and existing spatial databases and spatial
+analytical engines are disk-oriented (e.g., Oracle Spatial,
+SpatialHadoop, and Hadoop Gis \cite{spatialhadoop,hadoopgis}). Since
+they have been optimized for IO efficiency, their performance often
+deteriorates when scaling to large spatial data.
+
+A popular choice for achieving low latency and high throughput
+nowadays is to use in-memory computing over a cluster of commodity
+machines. Systems like Spark \cite{spark} have witnessed great success
+in big data processing, by offering low query latency and high
+analytical throughput using distributed memory storage and
+computing. Recently, Spark SQL \cite{sparksql} extends Spark with a
+SQL-like query interface to conduct relational processing on different
+underlying data sources (e.g., data from DFS). Such an extension
+provides useful abstraction for supporting easy and user-friendly big
+data analytics over a distributed memory space. Furthermore, the
+declarative nature of the SQL language also enables rich opportunities
+for query optimization while dramatically simplifying the job of an
+end user.
+
+However, none of the existing {\em distributed in-memory} query and
+analytical engines, like Spark, Spark SQL, and MemSQL, provide native
+support for spatial queries and analytics. In order to use these
+systems to process large spatial data, one has to rely on UDFs or user
+programs to support spatial queries and analytics. Since a UDF (or a
+user program) sits outside the kernel of the query engine, the
+underlying system are not able to optimize the workload, which often
+leads to very expensive query evaluation plans. For example, when
+Spark SQL implements a spatial distance join or a $k$ nearest neighbor
+join operation via a UDF, it has to use the expensive cartesian
+product approach which is not scalable for large data.
+
+Inspired by these observations, we design and implement the \name
+(\underline{S}patial \underline{I}n-\underline{M}emory \underline{B}ig
+data \underline{A}nalytics) system, to support spatial queries and
+analytics over big spatial data using a distributed in-memory
+analytical engine with the following main objectives: {\em simple and
+  expressive query language, low query latency, high analytics
+  throughput, and excellent scalability}. In particular, \name has the
+following distinct features:
+\begin{pkl}
+\item \name extends Spark SQL with a class of common and
+  popular spatial operators to offer a simple and expressive spatial
+  query language in both SQL and DataFrame APIs.
+\item \name supports the construction of (spatial) indexing
+  structures over RDDs (resilient distributed dataset) to achieve low
+  query latency.
+\item \name implements a SQL context module that is able to
+  execute multiple spatial queries in parallel and improve analytical
+  throughput.
+\item \name introduces spatial-aware optimizations to both logical and
+  physical optimizers, and uses cost-based optimizer (CBO), to select
+  good spatial query plans.
+\end{pkl}
+
+Since \name is based on Spark, it inherits the fault tolerance
+mechanism from Spark. Different from Spark SQL that relies on UDFs in
+order to support spatial queries and analytics, \name supports
+such operations natively with the help of its indexing structures,
+query optimizer, and query evaluator. Because these modules are
+tailored towards to spatial operators, \name achieves excellent
+scalability for answering spatial queries and analytics over large
+spatial data.
+
+The rest of this paper is organized as follows. We introduce the
+necessary background, such as Spark, Spark SQL and other related
+systems, in Section \ref{sec:background}. We provide a system overview
+for \name in Section \ref{sec:overview}. Section \ref{sec:parser}
+presents the programming and query interface in \name and Section
+\ref{sec:index} discusses the indexing support in \name. Section
+\ref{sec:query} explains \name's query optimization and evaluation
+modules in details. Extensive experimental results over large real
+data sets are presented in Section \ref{sec:exp}. Section
+\ref{sec:related} summarizes the related work in addition to those
+discussed in Section \ref{sec:background}, and the paper is concluded
+in Section \ref{sec:conclude}.
+
+% However, it is inefficient and also lack of expressing ability for
+% spatial data analyzing. In this paper, we introduce \\name, a
+% distributed analytical system with native support for spatial
+% data. This project extends Spark SQL on different level, aiming at
+% provide user-friendly spatial query interfaces and efficient spatial
+% data analyzing. Firstly, we add spatial query keywords, such as $KNN$
+% and $RANGE$, into the query language so that users can express spatial
+% query logic easily. Second, our system can conduct different kinds of
+% indexes on some user-specified attributes. Eventually, our system can
+% automatically optimize each query based on existing indexes and
+% statistics for better query latency and multi-user throughput.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:
+

@@ -1,0 +1,373 @@
+\section{Background and Related Systems}
+\label{sec:background}
+In this section, we briefly introduce Spark and Spark SQL. We also
+provide a survey on a few existing systems that are closely related to
+our efforts on executing spatial queries and analytics using a cluster
+of commodity machines.
+
+%Maybe need to be extended
+\subsection{Spark Overview}
+\label{sub:spark}
+Apache Spark \cite{spark} is a general-purpose cluster computing
+engine with APIs in Scala, Java and Python. Since its inception, a
+rich ecosystem for in-memory big data analytics has been built
+including libraries for streaming, graph processing, and machine
+learning \cite{apachespark} based on Spark.  Released in 2010, Spark
+has become one of the most widely-used systems with a
+``language-integrated'' API and the most active open source project
+for big data processing.
+
+Spark provides an efficient abstraction for in-memory cluster
+computing called Resilient Distributed Datasets (RDDs). Each RDD is a
+distributed collection of Java or Python objects partitioned across a
+cluster. Users can manipulate RDDs through the functional programming
+APIs (e.g. \texttt{map}, \texttt{filter}, \texttt{reduce}) provided by
+Spark, which take functions in the programming language and ship them
+to other nodes on the cluster. For instance, we can count lines
+containing ``ERROR'' in a text file with the following scala code:
+
+\begin{lstlisting}
+lines = spark.textFile("hdfs://...")
+errors = lines.filter(l => l.contains("ERROR"))
+println(errors.count())
+\end{lstlisting}
+
+In this example, we create an RDD of strings called \texttt{lines} by
+reading an HDFS file, and then use \texttt{filter} operation to obtain
+another RDD \texttt{errors} which consists of the lines containing
+``ERROR'' only. Eventually, a \texttt{count} is performed on
+\texttt{errors} returning the final answer.
+
+RDDs are fault-tolerant as Spark can recover lost data using lineage
+graphs by rerunning operations to rebuild missing partitions. RDDs can
+also be cached in memory or made persistent on disk explicitly to
+accelerate data reusing and support iteration \cite{spark}. Another
+distinct feature is that RDDs are evaluated \emph{lazily}. Each RDD
+actually represents a ``logical plan'' to compute a dataset, that
+consists of one or more {\em ``transformations''} on the original
+input RDD, rather than the physical, materialized dataset
+itself. Spark will wait until certain output operations (known as {\em
+  ``action''}), such as \texttt{collect}, to launch a
+computation. This allows the engine to do some simple optimizations,
+such as pipelining operations. Back to the example above, Spark will
+pipeline reading lines from the HDFS file with applying the filter and
+counting records. Thanks to this feature, Spark never needs to
+materialize intermediate \texttt{lines} and \texttt{errors}
+results. Though such optimization is extremely useful, it is also
+limited because the engine does not understand the structure of data
+in RDDs (that can be arbitrary Java/Python objects) or the semantics
+of user functions (which may contain arbitrary codes and logic).
+
+\subsection{Spark SQL Overview}
+\label{sub:sparksql}
+Spark SQL \cite{sparksql} is a major component of Apache Spark that
+integrates relational processing with Spark's functional programming
+API. Built with experience from its predecessor Shark \cite{shark},
+Spark SQL leverages the benefits of relational processing
+(e.g. declarative queries and optimized storage), and allows users to
+call other analytics libraries in Spark (e.g. SparkML for machine
+learning) through its DataFrame interface and APIs.
+
+Compared to Shark, Spark SQL bridges the gap between relational and
+procedural models through two contributions. First, Spark SQL provides
+a DataFrame API which can perform relational operations on both
+external data sources (e.g. JSON, Parquet \cite{parquet} and Avro
+\cite{avro}) and Spark's built-in distributed collections
+(i.e. RDDs). This API is similar to the widely used data frame concept
+in R \cite{sysr}, but evaluates operations lazily in order to get more
+optimization opportunities.  Secondly, to support a wide range of data
+sources and algorithms in big data, Spark SQL introduces a highly
+extensible optimizer called \emph{Catalyst}, which makes it easy to
+add data sources, optimization rules, and data types for different
+application domains such as machine learning.
+
+Spark SQL is an important evolution of the core Spark as it makes
+Spark accessible to a wider user base and improves query execution and
+optimization for existing ones. The Spark community is now
+incorporating more APIs and supports into Spark SQL: DataFrame becomes
+the standard data representation in a new ``ML pipeline'' API for
+machine learning, and now expanding to other Spark components such as
+GraphX and streaming.
+
+Despite the support of relational style processing with rich
+functionality, Spark SQL does not perform well on spatial queries with
+multi-dimensional spatial data. To begin with, expressing spatial
+queries is inconvenient or even impossible in Spark SQL. For instance,
+we need to write a relational query as follows to express a 10 nearest
+neighbor query for a query point $q=(3.0, 2.0)$ from the table
+\texttt{point1} (that contains a set of 2D points):
+\begin{lstlisting}[language=SQL]
+SELECT * FROM point1
+ORDERED BY (point1.x - 3.0) * (point1.x - 3.0) + (point1.y - 2.0) * (point1.y - 2.0)
+LIMIT 10
+\end{lstlisting}
+To make the matter worse, if we want to retrieve, or do analyses over,
+the intersection of results from multiple $k$NN queries, more complex
+expressions such as sub-queries with nesting will be involved. And, it
+is impossible to express a $k$NN join over two tables in a single
+Spark SQL query.
+
+Another important observation is that the filter operation in Spark
+SQL requires scanning the entire RDDs. This is a big overhead for
+selective filtering conditions since most computations do not actually
+contribute to the final results.  Lastly, Spark SQL does not support
+the optimization of spatial queries and analytics.
+
+\subsection{Closely Related Systems}
+\label{sub:related_sys}
+There exists a number of systems that support the execution of spatial
+queries and analytics over distributed spatial data using a cluster of
+commodity machines. We will review them briefly next.
+
+\addtolength{\tabcolsep}{-2pt}
+\begin{table*}[!t]
+
+\begin{minipage}{4.0in}
+  %\centering
+  \scriptsize
+  \begin{tabular}{|c|c|c|c|c|c|}
+  \hline
+  Core Features & \name & GeoSpark & SpatialSpark & SpatialHadoop & H-GIS\\
+  \hline
+  data dimensions & multiple & $d \le 2$ & $d\le 2 $ & $d\le 2$ & $d\le 2$ \\
+  \hline
+  SQL interface & \checkmark & $\times$ & $\times$ & Pigeon & $\times$ \\
+  \hline
+  DataFrame API & \checkmark & $\times$ & $\times$ & $\times$ & $\times$ \\
+  \hline
+  spatial indexing & R-tree & R-/quad-tree & grid/kd-tree & grid/R-tree & SATO \\
+  \hline
+  in-memory & \checkmark & \checkmark & \checkmark & $\times$ & $\times$ \\
+  \hline
+  query planner & \checkmark & $\times$ & $\times$ & \checkmark & $\times$ \\
+  \hline
+  query optimizer & \checkmark  & $\times$ & $\times$ & $\times$ & $\times$ \\
+  \hline \vspace{-0.5mm}
+  concurrent & thread pool in & user-level & user-level & user-level & user-level \\
+  query execution& query engine & process & process & process & process \\
+  \hline
+  \multicolumn{6}{c}{\bf{query operation support} } \\
+  \hline
+  box range query & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+  \hline
+  circle range query & \checkmark & \checkmark & \checkmark & \checkmark & $\times$ \\
+  \hline
+  $k$ nearest neighbor & \checkmark & \checkmark & only 1NN & \checkmark & $\times$ \\
+  \hline
+  distance join & \checkmark & via spatial join & \checkmark & via spatial join & \checkmark \\
+  \hline
+  $k$NN join & \checkmark & $\times$ & $\times$ & $\times$ & $\times$ \\
+  \hline
+  geometric object & $\times$ & \checkmark & \checkmark & \checkmark & \checkmark \\
+  \hline
+  compound query & \checkmark & $\times$ & $\times$ & \checkmark & $\times$ \\
+  \hline
+\end{tabular}
+\vspace{-2mm}
+\caption{Comparing \name against other systems.}
+\label{tb:func}
+\vspace{-5mm}
+\end{minipage}
+\begin{minipage}{3.0in}
+	%\centering
+	\small
+	\begin{tabular}{|l|l|}
+      \hline
+      Notation & Description\\
+      \hline
+      $R$ (resp. $S$) & a table of a point set $R$ (resp. $S$)\\
+      \hline
+      $r$ (resp. $s$) & a record (a point) $r \in R$ (resp. $s \in S$)\\
+      \hline
+      $|r, s|$ & $L_2$ distance from $r$ to $s$\\
+      \hline
+      $\maxdist(q, B)$ & $\max_{p \in B}|p, q|$ forpoint $q$ and MBR $B$\\
+      \hline
+      $\maxdist(A, B)$ & $\max_{q \in A, p \in B}|p, q|$ for MBRs $A$ and $B$\\
+      \hline
+      $\mindist(q, B)$ & $\min_{p \in B}|p, q|$ for point $q$ and MBR $B$\\
+      \hline
+      $\mindist(A, B)$ & $\min_{q \in A, p \in B}|p, q|$ for MBRs $A$ and $B$\\
+      \hline
+      $\range(A, R)$ & records from $R$ within area $A$\\
+      \hline
+      $\knn(r, S)$ & $k$ nearest neighbors of $r$ from $S$\\
+      \hline
+      $R \Join_{\tau} S$ & $R$ distance join of $S$ with threshold $\tau$ \\
+      \hline
+      $R \Join_{\knn} S$ & $k$NN join between $R$ and $S$ \\
+      \hline
+      $R_i, S_j$ & $i$-th (resp. $j$-th) partition of table $R$ (resp. $S$) \\
+      \hline
+      $\mbr(R_i)$ & MBR of $R_i$\\
+      \hline
+      $cr_i$ & centroid of $\mbr(R_i)$\\
+      \hline
+      $u_i$ & $\max_{r \in R_i}|cr_i, r|$ \\
+      \hline
+	\end{tabular}
+    \vspace{-2mm}
+	\caption{Frequently used notations.}
+	\label{tb:notation}
+	\vspace{-5mm}
+\end{minipage}
+
+\end{table*}
+
+\Paragraph{Hadoop based system.} SpatialHadoop \cite{spatialhadoop} is an
+extension of the MapReduce framework \cite{mapr}, based on Hadoop,
+with native support for spatial data. It enriches Hadoop with spatial
+data awareness in language, storage, and operation layers. In the
+language layer, it provides an extension to Pig \cite{pig}, called
+Pigeon \cite{pigeon}, which adds spatial data types, functions and
+operations as UDFs in Pig Latin Language. In the storage layer,
+SpatialHadoop adapts traditional spatial index structures, such as
+Grid, R-Tree and R+-Tree, to a two-level spatial index framework. At
+the storage and MapReduce layers, SpatialHadoop extends MapReduce API
+with two new components, \emph{SpatialFileSplitter} and
+\emph{SpatialRecordReader}, for efficient and scalable spatial data
+processing. In the operation layer, SpatialHadoop is equipped with
+several predefined spatial operations including box range queries, $k$
+nearest neighbor ($k$NN) queries and spatial joins over geometric
+objects using conditions such as {\em within} and {\em
+  intersect}. However, only two dimensional data are supported
+(according to the latest open-source version of
+SpatialHadoop). Operations such as circle range queries and $k$NN
+joins are not supported.  SpatialHadoop does have good support on
+different geometric objects, e.g. segments and polygons, and
+operations over them, e.g. generating convex hulls and skylines. that
+are similar to a distributed geometric data analytical system over
+MapReduce \cite{cg_hadoop}.
+
+Hadoop GIS \cite{hadoopgis} is a scalable and high performance spatial
+data warehousing system for running large scale spatial queries on Hadoop.
+It is available as a set of libraries for processing spatial queries
+and as an integrated software package in Hive \cite{hive}. In the latest
+version, the SATO framework \cite{sato} has been adopted into the system
+to provide different partition and indexing approaches. However, Hadoop-GIS
+only supports analytics for data up to two dimensions and two query types:
+box range queries and spatial joins over geometric objects using {\em within}
+and {\em intersect}). 
+% Hadoop GIS extends Hive with uniform grid index.
+% Yet, it runs on top of Hadoop and does not change the underlying
+% Hadoop kernel, and hence traditional MapReduce programs that access
+%Hadoop directly cannot make any use of Hadoop GIS, and hence its
+%applicability is limited, and its performance is limited by the
+%limitations of existing Hadoop systems, as shown and detailed by
+%SpatialHadoop \cite{spatialhadoop}.
+
+\Paragraph{GeoSpark.} GeoSpark \cite{geospark} is an in-memory cluster
+computing framework based on Apache Spark for processing large-scale
+spatial data, which provides a new abstraction of Spatial Resilient
+Distributed Datasets (SRDDs) and numbers of spatial operations. GeoSpark
+supports range queries, $k$NN Queries and spatial joins over SRDDs, and
+allows users to build local indexes (e.g. quad-trees and R-trees) inside
+each partition. Note that Spark allows developers to build RDDs of any
+user-defined types outside Spark kernel. And essentially, a SRDD simply
+encapsulates an RDD of spatial objects (which can be points, polygons
+or circles) with some common geometrical operations (e.g. calculating
+the MBR of its elements). Moreover, GeoSpark does be able to utilize local
+indexes to accelerate query processing, yet does not support partition pruning
+using global indexes. GeoSpark only supports two-dimensional data, and more
+importantly, it can only deal with spatial objects carrying spatial coordinates
+alone other than any additional attributes (e.g. strings for description). GeoSpark
+is simply {\em a library runs on top of and outside Spark without a query engine}.
+As a result, GeoSpark does not provide a user-friendly query interface
+like SQL or DataFrame API, and also does not have a query planner or
+a query optimizer.
+
+\Paragraph{SpatialSpark.} SpatialSpark \cite{spatialspark} implements
+a set of spatial operations for analyzing large spatial data with
+Apache Spark. Specifically, SpatialSpark supports box range queries
+and spatial joins for polygon objects over conditions like \texttt{intersect},
+and \texttt{within}. SpatialSpark adopts data partition strategies like
+fixed grid or kd-tree for data file in HDFS, to build an index (outside the
+Spark engine) to accelerate spatial operations. Similar to SpatialHadoop,
+SpatialSpark only supports two-dimensional data, and does not index RDDs
+natively. What's more, same as GeoSpark, it is also {\em a library runs on
+top of and outside Spark without a query engine} and {\em does not} support
+SQL language nor DataFrame APIs.
+
+% since it is not an extension of Spark SQL, it {\em does not} support
+% a SQL-like query interface nor DataFrame APIs. There is no query
+% optimizer at query runtime.
+
+% \Paragraph{GeoMesa.} GeoMesa is an open-source, distributed,
+% spatio-temporal database built on top of the Apache Accumulo column
+% family store. Leveraging GeoHash as indexing strategy, GeoMesa aims
+% to provide as much of spatial querying and data manipulation to
+% Accumulo as PostGIS does to Postgres. In the latest version of
+% GeoMesa,
+
+\Paragraph{Remarks.} Note that all the systems mentioned above does not
+support concurrent queries natively with a multi-threading module. Thus,
+they have to rely on user-level processes to achieve this, which introduce
+non-trivial overheads from the operating system and hurts system throughput.
+In contrast, \name employs a thread pool inside the query engine, which
+provides much better support on concurrent queries.
+
+In addition to these systems, there are also systems like GeoMesa and MD-HBase
+that are (less) related and we will review them in Section \ref{sec:related}.
+Table \ref{tb:func} compares the core features between \name and the three systems
+we have reviewed above.
+
+\subsection{Spatial Operators}
+\label{sec:operators}
+In this paper, we focus on {\em point objects}. Our techniques and
+frameworks also support rectangular objects (such as MBRs, minimum
+bounding boxes), and can be easily extended to support general
+geometric objects. Table \ref{tb:notation} lists the notations
+used in the rest of this paper.
+
+Formally, consider a data set $R\subset \mathbb{R}^d$ with $N$
+records, where $d\ge 1$ is the dimensionality of the data set and each
+record $r\in R$ is a point in $\mathbb{R}^d$. For any two points
+$p, q\in \mathbb{R}^d$, $|p, q|$ denotes their $L_2$ distance. We
+consider the following spatial operators from \name in this
+paper. Note that \name supports more operators beyond the ones
+presented here, and can be extended to support new operations. We
+choose to present these representatives due to their wide
+applications and popularity in practice \cite{Samet:2005:FMM:1076819}.
+
+\vspace{-3mm}
+\begin{definition}[Range Query]
+\label{def:range}
+Given a query area $Q$ (either a rectangle or a circle) and a data set
+$R$, a range query (denoted as $range(Q, R)$) asks for all records
+within $Q$ from $R$. Formally,
+\[ range(Q, R) = \{r|r \in R, r \in Q\}. \]
+\end{definition}
+
+\vspace{-7mm}
+\begin{definition}[$k$NN Query]
+  \label{def:knn}
+  Given a query point $q\in \mathbb{R}^d$, a data set $R$ and an
+  integer $k\ge 1$, the $k$ nearest neighbors of $q$ wrt $R$, denoted
+  as $\knn(q, S)$, is a set of $k$ records from $R$ where
+\[\forall o \in \knn(q, R), \forall r \in R - \knn(q, R), |o, q| \leq
+|r, q|.\]
+\end{definition}
+
+\vspace{-7mm}
+\begin{definition}[Distance Join]
+\label{def:disjoin}
+Given two data sets $R$ and $S$ and a distance threshold $\tau> 0$, the
+distance join between $R$ and $S$, denoted as $R \Join_{\tau} S$,
+finds all pairs $(r, s)$ within distance $\tau$ such that $r\in R$ and
+$s\in S$. Formally,
+\[ R \Join_{\tau} S = \{(r, s)|(r, s) \in R \times S, |r, s| \le \tau\}. \]
+\end{definition}
+
+\vspace{-7mm}
+\begin{definition}[$k$NN Join]
+\label{def:knnjoin}
+Given two data sets $R$ and $S$, and an integer $k\ge 1$, the $k$NN
+join between $R$ and $S$, denoted as $R \Join_{\knn} S$, pairs each
+object $r \in R$ with each of its $k$NNs from $S$. Formally,
+\[ R \Join_{\knn} S = \{(r, s)|r \in R, s \in \knn(r, S)\}. \]
+\end{definition}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

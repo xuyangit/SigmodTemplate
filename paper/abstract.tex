@@ -1,0 +1,33 @@
+Many applications have witnessed the explosive growth of spatial and
+spatio-temporal data in recent years, due to the increasing popularity
+of smart phones and the rapid development in internet of things (IOT).
+As a result, it is critical to provide {\em fast, scalable, and
+high-throughput} spatial queries and analytics for numerous
+applications in location-base services (LBS). Traditional spatial
+databases and spatial analytical engines are disk-based and optimized
+for IO efficiency. But increasingly, data is stored and processed in
+memory to achieve low latency and CPU time becomes the new bottleneck.
+
+% On the other hand, in-memory computing over a cluster of commodity
+% machines becomes increasingly popular as the answer for providing low
+% latency, good scalability, and high throughput in different big data
+% management domains.
+
+We present the \name (Spatial In-Memory Big data Analytics) system
+that offers scalable and efficient in-memory spatial queries and
+analytics for big spatial data. \name is based on Spark, and runs over
+a cluster of commodity machines. In particular, \name extends and
+updates the Spark SQL engine to support rich spatial queries and
+analytics through both SQL and DataFrame interfaces. It introduces the
+concept and construction of indices over RDDs in order to work with
+big spatial data and complex spatial operators. Lastly, \name
+implements an effective query optimizer, that leverages its indices
+and novel spatial-aware optimizations over RDDs, to achieve both low
+latency and high throughput. Extensive experiments over large data
+sets demonstrate \name's superior performance compared against other
+spatial query and analytical engines.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:

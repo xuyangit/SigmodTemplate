@@ -1,0 +1,196 @@
+\begin{thebibliography}{10}
+
+\bibitem{vhadoop}
+http://www.comp.nus.edu.sg/~dbsystem/source.html.
+
+\bibitem{indexedrdd}
+https://github.com/amplab/spark-indexedrdd.
+
+\bibitem{accumulo}
+Apache accumulo.
+\newblock http://accumulo.apache.org.
+
+\bibitem{avro}
+Apache avro project.
+\newblock http://avro.apache.org.
+
+\bibitem{parquet}
+Apache parquet project.
+\newblock http://parquet.incubator.apache.org.
+
+\bibitem{apachespark}
+Apache spark project.
+\newblock http://spark.apache.org.
+
+\bibitem{gdelt}
+Gdelt project.
+\newblock http://www.gdeltproject.org.
+
+\bibitem{osm}
+Openstreepmap project.
+\newblock http://www.openstreetmap.org.
+
+\bibitem{sysr}
+R project for statistical computing.
+\newblock http://www.r-project.org.
+
+\bibitem{hadoopgis}
+A.~Aji, F.~Wang, H.~Vo, R.~Lee, Q.~Liu, X.~Zhang, and J.~Saltz.
+\newblock Hadoop gis: a high performance spatial data warehousing system over
+  mapreduce.
+\newblock In {\em VLDB}, 2013.
+
+\bibitem{akdogan2010voronoi}
+A.~Akdogan, U.~Demiryurek, F.~Banaei-Kashani, and C.~Shahabi.
+\newblock Voronoi-based geospatial query processing with mapreduce.
+\newblock In {\em CouldCom}, 2010.
+
+\bibitem{sparksql}
+M.~Armbrust, R.~S. Xin, C.~Lian, Y.~Huai, D.~Liu, J.~K. Bradley, X.~Meng,
+  T.~Kaftan, M.~J. Franklin, A.~Ghodsi, et~al.
+\newblock Spark sql: Relational data processing in spark.
+\newblock In {\em SIGMOD}, 2015.
+
+\bibitem{DBLP:conf/sigmod/BeckmannKSS90}
+N.~Beckmann, H.~Kriegel, R.~Schneider, and B.~Seeger.
+\newblock The r*-tree: An efficient and robust access method for points and
+  rectangles.
+\newblock In {\em SIGMOD}, 1990.
+
+\bibitem{cary2009experiences}
+A.~Cary, Z.~Sun, V.~Hristidis, and N.~Rishe.
+\newblock Experiences on processing spatial data with mapreduce.
+\newblock In {\em Scientific and Statistical Database Management}, 2009.
+
+\bibitem{DBLP:journals/tocs/ChangDGHWBCFG08}
+F.~Chang, J.~Dean, S.~Ghemawat, W.~C. Hsieh, D.~A. Wallach, M.~Burrows,
+  T.~Chandra, A.~Fikes, and R.~E. Gruber.
+\newblock Bigtable: {A} distributed storage system for structured data.
+\newblock {\em {ACM} Trans. Comput. Syst.}, 26(2), 2008.
+
+\bibitem{mapr}
+J.~Dean and S.~Ghemawat.
+\newblock Mapreduce: Simplified data processing on large clusters.
+\newblock In {\em OSDI}, 2004.
+
+\bibitem{DBLP:journals/pvldb/EldawyAM15}
+A.~Eldawy, L.~Alarabi, and M.~F. Mokbel.
+\newblock Spatial partitioning techniques in spatial hadoop.
+\newblock {\em {PVLDB}}, 8(12):1602--1613, 2015.
+
+\bibitem{cg_hadoop}
+A.~Eldawy, Y.~Li, M.~F. Mokbel, and R.~Janardan.
+\newblock Cg\_hadoop: computational geometry in mapreduce.
+\newblock In {\em SIGSPATIAL}, 2013.
+
+\bibitem{pigeon}
+A.~Eldawy and M.~F. Mokbel.
+\newblock Pigeon: A spatial mapreduce language.
+\newblock In {\em ICDE}, 2014.
+
+\bibitem{spatialhadoop}
+A.~Eldawy and M.~F. Mokbel.
+\newblock Spatialhadoop: A mapreduce framework for spatial data.
+\newblock In {\em ICDE}, 2015.
+
+\bibitem{rtree}
+A.~Guttman.
+\newblock R-trees: A dynamic index structure for spatial searching.
+\newblock In {\em SIGMOD}, 1984.
+
+\bibitem{geomesa}
+J.~N. Hughes, A.~Annex, C.~N. Eichelberger, A.~Fox, A.~Hulbert, and
+  M.~Ronquest.
+\newblock Geomesa: a distributed architecture for spatio-temporal fusion.
+\newblock In {\em SPIE Defense+ Security}, 2015.
+
+\bibitem{str}
+S.~T. Leutenegger, M.~Lopez, J.~Edgington, et~al.
+\newblock {STR: A simple and efficient algorithm for R-tree packing}.
+\newblock In {\em ICDE}, 1997.
+
+\bibitem{bcknnj}
+W.~Lu, Y.~Shen, S.~Chen, and B.~C. Ooi.
+\newblock Efficient processing of k nearest neighbor joins using mapreduce.
+\newblock In {\em VLDB}, 2012.
+
+\bibitem{ma2009query}
+Q.~Ma, B.~Yang, W.~Qian, and A.~Zhou.
+\newblock Query processing of massive trajectory data based on mapreduce.
+\newblock In {\em Proceedings of the first international workshop on Cloud data
+  management}, 2009.
+
+\bibitem{mdhbase}
+S.~Nishimura, S.~Das, D.~Agrawal, and A.~El~Abbadi.
+\newblock $\mathcal{MD}$-hbase: design and implementation of an elastic data
+  infrastructure for cloud-scale location services.
+\newblock In {\em DAPD}, 2013.
+
+\bibitem{pig}
+C.~Olston, B.~Reed, U.~Srivastava, R.~Kumar, and A.~Tomkins.
+\newblock Pig latin: a not-so-foreign language for data processing.
+\newblock In {\em SIGMOD}, 2008.
+
+\bibitem{DBLP:conf/sigmod/RoussopoulosKV95}
+N.~Roussopoulos, S.~Kelley, and F.~Vincent.
+\newblock Nearest neighbor queries.
+\newblock In {\em SIGMOD}, 1995.
+
+\bibitem{Samet:2005:FMM:1076819}
+H.~Samet.
+\newblock {\em Foundations of Multidimensional and Metric Data Structures (The
+  Morgan Kaufmann Series in Computer Graphics and Geometric Modeling)}.
+\newblock Morgan Kaufmann Publishers Inc., 2005.
+
+\bibitem{hive}
+A.~Thusoo, J.~S. Sarma, N.~Jain, Z.~Shao, P.~Chakka, S.~Anthony, H.~Liu,
+  P.~Wyckoff, and R.~Murthy.
+\newblock Hive: A warehousing solution over a map-reduce framework.
+\newblock In {\em PVDLB}, 2009.
+
+\bibitem{sato}
+H.~Vo, A.~Aji, and F.~Wang.
+\newblock Sato: A spatial data partitioning framework for scalable query
+  processing.
+\newblock In {\em SIGSPATIAL}, 2014.
+
+\bibitem{shark}
+R.~S. Xin, J.~Rosen, M.~Zaharia, M.~J. Franklin, S.~Shenker, and I.~Stoica.
+\newblock Shark: Sql and rich analytics at scale.
+\newblock In {\em SIGMOD}, 2013.
+
+\bibitem{spatialspark}
+S.~You, J.~Zhang, and L.~Gruenwald.
+\newblock Large-scale spatial join query processing in cloud.
+\newblock In {\em IEEE CloudDM workshop (To Appear)}, 2015.
+
+\bibitem{geospark}
+J.~Yu, J.~Wu, and M.~Sarwat.
+\newblock Geospark: A cluster computing framework for processing large-scale
+  spatial data.
+\newblock In {\em SIGSPATIAL GIS}, 2015.
+
+\bibitem{spark}
+M.~Zaharia, M.~Chowdhury, T.~Das, A.~Dave, J.~Ma, M.~McCauley, M.~J. Franklin,
+  S.~Shenker, and I.~Stoica.
+\newblock Resilient distributed datasets: A fault-tolerant abstraction for
+  in-memory cluster computing.
+\newblock In {\em NSDI}, 2012.
+
+\bibitem{feifeiknnj}
+C.~Zhang, F.~Li, and J.~Jestes.
+\newblock Efficient parallel knn joins for large data in mapreduce.
+\newblock In {\em EDBT}, 2012.
+
+\bibitem{zhang2009spatial}
+S.~Zhang, J.~Han, Z.~Liu, K.~Wang, and S.~Feng.
+\newblock Spatial queries evaluation with mapreduce.
+\newblock In {\em International Conference on Grid and Cooperative Computing},
+  2009.
+
+\bibitem{SJMR}
+S.~Zhang, J.~Han, Z.~Liu, K.~Wang, and Z.~Xu.
+\newblock Sjmr: Parallelizing spatial join with mapreduce on clusters.
+\newblock In {\em {IEEE} International Conference on Cluster Computing}, 2009.
+
+\end{thebibliography}

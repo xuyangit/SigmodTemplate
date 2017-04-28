@@ -1,0 +1,29 @@
+\section{Conclusion}
+\label{sec:conclude}
+This paper introduces \name, a distributed in-memory spatial query and
+analytical engine based on Spark. \name offers simple and expressive
+query language in both SQL and DataFrame interfaces. It features low
+query latency, high analytics throughput and excellent
+scalability. \name extends Spark SQL with native support on a class of
+common spatial operations, introduces indexes over RDDs, and adds
+spatial-aware logical and cost-based optimizations that makes use of
+existing indexes and statistics to select good query plans on the
+fly. Extensive experiments conducted on large real data sets show
+\name's superior performance against existing distributed spatial
+query analytical engines and Spark SQL, and its support for
+multidimensional data.
+
+For future work, we plan to add native support on more geometric
+objects (e.g., polygons) and additional spatial operators (e.g.,
+spatial join over polygons) to \name. Efficient spatial operations on
+very high dimensions and other metric spaces still present many
+challenges. We also plan to design and implement more sophisticated
+CBOs, such as using spatial histograms and kernel density estimate
+(KDE), in \name for more effective autotuning.
+ 
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "paper"
+%%% End:
+
