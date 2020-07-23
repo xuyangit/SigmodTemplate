@@ -209,7 +209,7 @@ def cherry_pick(pr_num, merge_hash, default_branch):
 
 def fix_version_from_branch(branch, versions):
     # Note: Assumes this is a sorted (newest->oldest) list of un-released versions
-    if branch == "master":
+    if branch == "main":
         return versions[0]
     else:
         branch_ver = branch.replace("branch-", "")
@@ -252,7 +252,7 @@ def resolve_jira_issue(merge_branches, comment, default_jira_id=""):
     default_fix_versions = map(lambda x: fix_version_from_branch(x, versions).name, merge_branches)
     for v in default_fix_versions:
         # Handles the case where we have forked a release branch but not yet made the release.
-        # In this case, if the PR is committed to the master branch and the release branch, we
+        # In this case, if the PR is committed to the main branch and the release branch, we
         # only consider the release branch to be the fix version. E.g. it is not valid to have
         # both 1.1.0 and 1.0.0 as fix versions.
         (major, minor, patch) = v.split(".")
@@ -292,7 +292,7 @@ def resolve_jira_issues(title, merge_branches, comment):
 #branch_names = filter(lambda x: x.startswith("branch-"), [x['name'] for x in branches])
 # Assumes branch names can be sorted lexicographically
 #latest_branch = sorted(branch_names, reverse=True)[0]
-latest_branch = "master"
+latest_branch = "main"
 
 pr_num = raw_input("Which pull request would you like to merge? (e.g. 34): ")
 pr = get_json("%s/pulls/%s" % (GITHUB_API_BASE, pr_num))
